@@ -53,7 +53,7 @@ This project was built to demonstrate advanced systems programming techniques an
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/Nexus-HFT.git
+   git clone https://github.com/udit-paul/Nexus-HFT.git
    cd Nexus-HFT
    ```
 
