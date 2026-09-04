@@ -30,6 +30,12 @@ const enginePath = path.resolve(
 );
 console.log(`Starting Nexus-HFT Engine from: ${enginePath}`);
 const engine = spawn(enginePath);
+let engineRunning = false;
+
+engine.on('spawn', () => {
+  engineRunning = true;
+  console.log('Nexus-HFT Engine started successfully');
+});
 
 let pendingTrades = [];
 
@@ -75,9 +81,17 @@ engine.stderr.on('data', (data) => {
 });
 
 engine.on('close', (code) => {
+  engineRunning = false;
   console.log(`Engine process exited with code ${code}`);
 });
 
+app.get('/', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'Nexus-HFT Middleware',
+    engine: engineRunning ? 'running' : 'stopped'
+  });
+});
 io.on('connection', (socket) => {
   console.log('A client connected:', socket.id);
 
