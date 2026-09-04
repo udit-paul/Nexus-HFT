@@ -17,7 +17,7 @@ const io = new Server(server, {
 });
 
 // Spawn the C++ Nexus-HFT Engine
-const enginePath = path.resolve(__dirname, '../../build/Release/nexus_engine_v2.exe');
+const enginePath = path.resolve(__dirname, '../../build/nexus_engine_v2.exe');
 console.log(`Starting Nexus-HFT Engine from: ${enginePath}`);
 const engine = spawn(enginePath);
 
