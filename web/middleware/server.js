@@ -97,10 +97,12 @@ io.on('connection', (socket) => {
 
   socket.on('submit_order', (order) => {
     // order format: { side: 'BUY' or 'SELL', price: 100, qty: 10 }
-    if (order.side && order.price && order.qty) {
+    if (order.side && order.price > 0 && order.qty > 0) {
         const cmd = `${order.side} ${order.price} ${order.qty}\n`;
         console.log(`Routing to engine: ${cmd.trim()}`);
         engine.stdin.write(cmd);
+    } else {
+        console.error('Invalid order received:', order);
     }
   });
 

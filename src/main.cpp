@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <iomanip>
 #include "nexus/engine/matching_engine.hpp"
 #include "nexus/core/memory_pool.hpp"
 #include "nexus/core/rdtsc.hpp"
@@ -14,18 +15,22 @@ void print_book(const OrderBook& book) {
     std::cout << "BOOK {\"bids\":[";
     bool first = true;
     int count = 0;
-    for (const auto& [price, level] : book.get_bids()) {
+    for (const auto& pair : book.get_bids()) {
+        auto price = pair.first;
+        auto level = pair.second;
         if (!first) std::cout << ",";
-        std::cout << "[" << (price / 100.0) << "," << level.total_volume << "]";
+        std::cout << "[" << std::fixed << std::setprecision(2) << (price / 100.0) << "," << level.total_volume << "]";
         first = false;
         if (++count >= 10) break; // limit to top 10
     }
     std::cout << "],\"asks\":[";
     first = true;
     count = 0;
-    for (const auto& [price, level] : book.get_asks()) {
+    for (const auto& pair : book.get_asks()) {
+        auto price = pair.first;
+        auto level = pair.second;
         if (!first) std::cout << ",";
-        std::cout << "[" << (price / 100.0) << "," << level.total_volume << "]";
+        std::cout << "[" << std::fixed << std::setprecision(2) << (price / 100.0) << "," << level.total_volume << "]";
         first = false;
         if (++count >= 10) break; // limit to top 10
     }
@@ -56,9 +61,14 @@ int main() {
             std::cout << "CLEAR_ACK" << std::endl;
         } else if (command == "BUY" || command == "SELL") {
             double price_input;
-            Quantity qty;
-            if (iss >> price_input >> qty) {
+            long long qty_input;
+            if (iss >> price_input >> qty_input) {
+                if (price_input <= 0 || qty_input <= 0) {
+                    std::cerr << "ERR Price and quantity must be positive" << std::endl;
+                    continue;
+                }
                 Price price = static_cast<Price>(price_input * 100.0 + 0.5);
+                Quantity qty = static_cast<Quantity>(qty_input);
                 Side side = (command == "BUY") ? Side::Buy : Side::Sell;
                 
                 OrderNode* order = pool->allocate();
@@ -84,7 +94,7 @@ int main() {
                 uint64_t latency_ns = g_tsc_cal.to_ns_u64(t_end - t_start);
                 
                 for (const auto& trade : trades) {
-                    std::cout << "TRADE " << (trade.price / 100.0) << " " << trade.qty << std::endl;
+                    std::cout << "TRADE " << std::fixed << std::setprecision(2) << (trade.price / 100.0) << " " << trade.qty << std::endl;
                 }
                 
                 print_book(engine->get_book());

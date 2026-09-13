@@ -12,7 +12,11 @@
         #define NOMINMAX
     #endif
     #include <windows.h>
-    #include <intrin.h>
+    #if defined(_MSC_VER)
+        #include <intrin.h>
+    #else
+        #include <x86intrin.h>
+    #endif
 #elif defined(__linux__) || defined(__APPLE__)
     #include <time.h>
 #endif

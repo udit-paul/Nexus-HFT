@@ -131,7 +131,7 @@ function App() {
             </div>
             <div className="form-group">
               <label>Price</label>
-              <input type="number" step="0.01" value={orderPrice} onChange={e => setOrderPrice(e.target.value)} placeholder="e.g. 100.50" required />
+              <input type="number" step="0.01" min="0" value={orderPrice} onChange={e => setOrderPrice(e.target.value)} placeholder="e.g. 100.50" required />
             </div>
             <div className="form-group">
               <label>Quantity</label>
